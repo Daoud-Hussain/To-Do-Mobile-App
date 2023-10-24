@@ -68,11 +68,11 @@ const App = () => {
                 renderItem={({ item }) => (
                     <View style={myStyles.listItem}>
                         <Text>{item.text}</Text>
-                        <TouchableOpacity onPress={() => editItem(item.id)}>
+                        <TouchableOpacity style={myStyles.edit}  onPress={() => editItem(item.id)}>
                             <Text style={{ color: 'blue' }}>Edit</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => deleteItem(item.id)}>
-                            <Text style={{ color: 'red' }}>Delete</Text>
+                        <TouchableOpacity style={myStyles.delete} onPress={() => deleteItem(item.id)}>
+                            <Text style={{ color: 'red'}}>Delete</Text>
                         </TouchableOpacity>
                     </View>
                 )}
@@ -80,7 +80,6 @@ const App = () => {
         </View>
     );
 };
-
 
 
 const myStyles = StyleSheet.create({
@@ -125,10 +124,24 @@ const myStyles = StyleSheet.create({
         padding: 10,
         marginTop: 5,
         borderWidth: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between', // Add this line
+    },
+    delete: {
+        width: '20%',
+        borderWidth: 1,
+        justifyContent: 'center', // Center content vertically
+        alignItems: 'center',     // Center content horizontally
+    },
+    edit: {
+        width: '20%',
+        borderWidth: 1,
+        justifyContent: 'center', // Center content vertically
+        alignItems: 'center',     // Center content horizontally
     },
     todos: {
         width: '80%'
     }
 });
 
-export default App;
+export default App;
