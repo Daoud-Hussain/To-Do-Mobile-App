@@ -117,7 +117,7 @@ const myStyles = StyleSheet.create({
   },
 
   appButtonText: {
-    padding: 10,
+    padding: 10, 
     fontWeight: 'bold',
   },
 
