@@ -12,7 +12,7 @@ import {
 const App = () => {
   const [text, setText] = useState('');
   const [items, setItems] = useState([]);
-  const [editId, setEditId] = useState(null); 
+  const [editId, setEditId] = useState(null);
   const addItem = () => {
     if (text !== '') {
       if (editId !== null) {
@@ -23,7 +23,7 @@ const App = () => {
           return item;
         });
         setItems(updatedItems);
-        setEditId(null); 
+        setEditId(null);
       } else {
         setItems([...items, {text, id: Date.now()}]);
       }
@@ -35,7 +35,7 @@ const App = () => {
     const updatedItems = items.filter(item => item.id !== id);
     setItems(updatedItems);
     if (editId === id) {
-      setEditId(null); 
+      setEditId(null);
     }
   };
 
@@ -71,17 +71,21 @@ const App = () => {
         keyExtractor={item => item.id.toString()}
         renderItem={({item}) => (
           <View style={myStyles.listItem}>
-            <Text>{item.text}</Text>
-            <TouchableOpacity
-              style={myStyles.edit}
-              onPress={() => editItem(item.id)}>
-              <Text style={{color: 'blue'}}>Edit</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={myStyles.delete}
-              onPress={() => deleteItem(item.id)}>
-              <Text style={{color: 'red'}}>Delete</Text>
-            </TouchableOpacity>
+            <View style={myStyles.itemText}>
+              <Text>{item.text}</Text>
+            </View>
+            <View style={myStyles.buttons}>
+              <TouchableOpacity
+                style={myStyles.edit}
+                onPress={() => editItem(item.id)}>
+                <Text style={{color: 'white'}}>Edit</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={myStyles.delete}
+                onPress={() => deleteItem(item.id)}>
+                <Text style={{color: 'white'}}>Delete</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         )}
       />
@@ -104,20 +108,20 @@ const myStyles = StyleSheet.create({
   },
 
   inputContainer: {
-    width: '80%',
+    width: '90%',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 5,
+    marginTop: 15,
   },
 
   input: {
     borderWidth: 1,
-    width: '80%',
+    width: '75%',
   },
 
   appButtonText: {
-    padding: 10, 
+    padding: 10,
     fontWeight: 'bold',
   },
 
@@ -127,28 +131,39 @@ const myStyles = StyleSheet.create({
     marginLeft: 5,
   },
 
+  itemText: {
+    width: '60%'
+  },
+
+  buttons: {
+    flexDirection: 'row',
+    width: '30%',
+  },
   listItem: {
     padding: 10,
     marginTop: 5,
     borderWidth: 1,
-    flexDirection: 'row', 
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   delete: {
-    width: '20%',
+    width: '45%',
+    backgroundColor: 'red',
     borderWidth: 1,
-    justifyContent: 'center', 
+    justifyContent: 'center',
     alignItems: 'center', 
-    marginHorizontal: 5, 
+    marginLeft: 10
   },
   edit: {
-    width: '20%',
+    width: '45%',
+    backgroundColor: 'blue',
     borderWidth: 1,
     justifyContent: 'center', 
     alignItems: 'center', 
-    marginHorizontal: 5, 
   },
   todos: {
-    width: '80%',
+    width: '90%',
   },
 });
 
