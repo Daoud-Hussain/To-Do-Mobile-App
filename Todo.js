@@ -1,8 +1,8 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
+import { Button, icon } from 'react-native-paper';
 import {
   View,
   TextInput,
-  Button,
   Text,
   TouchableOpacity,
   FlatList,
@@ -18,14 +18,14 @@ const App = () => {
       if (editId !== null) {
         const updatedItems = items.map(item => {
           if (item.id === editId) {
-            return {...item, text};
+            return { ...item, text };
           }
           return item;
         });
         setItems(updatedItems);
         setEditId(null);
       } else {
-        setItems([...items, {text, id: Date.now()}]);
+        setItems([...items, { text, id: Date.now() }]);
       }
       setText('');
     }
@@ -64,12 +64,11 @@ const App = () => {
           </Text>
         </TouchableOpacity>
       </View>
-
       <FlatList
         style={myStyles.todos}
         data={items}
         keyExtractor={item => item.id.toString()}
-        renderItem={({item}) => (
+        renderItem={({ item }) => (
           <View style={myStyles.listItem}>
             <View style={myStyles.itemText}>
               <Text>{item.text}</Text>
@@ -78,12 +77,14 @@ const App = () => {
               <TouchableOpacity
                 style={myStyles.edit}
                 onPress={() => editItem(item.id)}>
-                <Text style={{color: 'white'}}>Edit</Text>
+                <Button icon="circle-edit-outlinemera"> </Button>
               </TouchableOpacity>
               <TouchableOpacity
                 style={myStyles.delete}
                 onPress={() => deleteItem(item.id)}>
-                <Text style={{color: 'white'}}>Delete</Text>
+                <Button icon="circle-edit-outline">
+            
+                </Button>
               </TouchableOpacity>
             </View>
           </View>
@@ -152,15 +153,15 @@ const myStyles = StyleSheet.create({
     backgroundColor: 'red',
     borderWidth: 1,
     justifyContent: 'center',
-    alignItems: 'center', 
+    alignItems: 'center',
     marginLeft: 10
   },
   edit: {
     width: '45%',
     backgroundColor: 'blue',
     borderWidth: 1,
-    justifyContent: 'center', 
-    alignItems: 'center', 
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   todos: {
     width: '90%',
