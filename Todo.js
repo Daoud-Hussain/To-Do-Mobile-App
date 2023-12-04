@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Button, icon } from 'react-native-paper';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   TextInput,
@@ -8,46 +8,97 @@ import {
   FlatList,
   StyleSheet,
 } from 'react-native';
+import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
+import { useColorScheme } from 'react-native';
 
 const App = () => {
   const [text, setText] = useState('');
   const [items, setItems] = useState([]);
   const [editId, setEditId] = useState(null);
-  const addItem = () => {
+  const scheme = useColorScheme();
+
+  const selectedTheme = scheme === 'light' ? DarkTheme : DefaultTheme;
+
+  const saveItemsToStorage = async (items) => {
+    try {
+      await AsyncStorage.setItem('todoItems', JSON.stringify(items));
+    } catch (error) {
+      console.error('Error saving items to AsyncStorage:', error.message);
+    }
+  };
+
+  const getItemsFromStorage = async () => {
+    try {
+      const storedItems = await AsyncStorage.getItem('todoItems');
+      return storedItems ? JSON.parse(storedItems) : [];
+    } catch (error) {
+      console.error('Error retrieving items from AsyncStorage:', error.message);
+      return [];
+    }
+  };
+
+  const addItem = async () => {
     if (text !== '') {
-      if (editId !== null) {
-        const updatedItems = items.map(item => {
-          if (item.id === editId) {
-            return { ...item, text };
-          }
-          return item;
-        });
+      try {
+        const updatedItems = editId !== null
+          ? items.map((item) => (item.id === editId ? { ...item, text } : item))
+          : [...items, { text, id: Date.now() }];
+
         setItems(updatedItems);
         setEditId(null);
-      } else {
-        setItems([...items, { text, id: Date.now() }]);
+        setText('');
+
+        // Save the updated items to AsyncStorage
+        await saveItemsToStorage(updatedItems);
+      } catch (error) {
+        console.error('Error adding item:', error.message);
       }
-      setText('');
     }
   };
 
-  const deleteItem = id => {
-    const updatedItems = items.filter(item => item.id !== id);
-    setItems(updatedItems);
-    if (editId === id) {
-      setEditId(null);
+  const deleteItem = async (id) => {
+    try {
+      const updatedItems = items.filter((item) => item.id !== id);
+      setItems(updatedItems);
+      if (editId === id) {
+        setEditId(null);
+      }
+
+      // Save the updated items to AsyncStorage
+      await saveItemsToStorage(updatedItems);
+    } catch (error) {
+      console.error('Error deleting item:', error.message);
     }
   };
 
-  const editItem = id => {
-    const itemToEdit = items.find(item => item.id === id);
-    if (itemToEdit) {
-      setText(itemToEdit.text);
-      setEditId(id);
+  const editItem = async (id) => {
+    try {
+      const itemToEdit = items.find((item) => item.id === id);
+      if (itemToEdit) {
+        setText(itemToEdit.text);
+        setEditId(id);
+      }
+    } catch (error) {
+      console.error('Error editing item:', error.message);
     }
   };
+
+  // Load items from AsyncStorage on component mount
+  useEffect(() => {
+    const loadItems = async () => {
+      try {
+        const storedItems = await getItemsFromStorage();
+        setItems(storedItems);
+      } catch (error) {
+        console.error('Error loading items:', error.message);
+      }
+    };
+
+    loadItems();
+  }, []);
 
   return (
+<NavigationContainer theme={selectedTheme}>
     <View style={myStyles.header}>
       <Text style={myStyles.headerText}>Todo App</Text>
 
@@ -71,26 +122,25 @@ const App = () => {
         renderItem={({ item }) => (
           <View style={myStyles.listItem}>
             <View style={myStyles.itemText}>
-              <Text>{item.text}</Text>
+              <Text style={{color: 'black'}}>{item.text}</Text>
             </View>
             <View style={myStyles.buttons}>
               <TouchableOpacity
                 style={myStyles.edit}
                 onPress={() => editItem(item.id)}>
-                <Button icon="circle-edit-outlinemera"> </Button>
+               <Text style={{ color: 'white'}}>Edit</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={myStyles.delete}
                 onPress={() => deleteItem(item.id)}>
-                <Button icon="circle-edit-outline">
-            
-                </Button>
+               <Text style={{ color: 'white'}}>Delete</Text>           
               </TouchableOpacity>
             </View>
           </View>
         )}
       />
     </View>
+    </NavigationContainer>
   );
 };
 
@@ -119,6 +169,7 @@ const myStyles = StyleSheet.create({
   input: {
     borderWidth: 1,
     width: '75%',
+    paddingLeft: 15
   },
 
   appButtonText: {
@@ -128,8 +179,10 @@ const myStyles = StyleSheet.create({
 
   appButtonContainer: {
     backgroundColor: 'lightblue',
-    borderRadius: 50,
+    borderRadius: 40,
     marginLeft: 5,
+    borderWidth: 1,
+    borderColor: 'black'
   },
 
   itemText: {
@@ -142,15 +195,18 @@ const myStyles = StyleSheet.create({
   },
   listItem: {
     padding: 10,
-    marginTop: 5,
+    marginTop: 7,
     borderWidth: 1,
+    borderColor: 'black',
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
+    backgroundColor: 'lightblue'
   },
   delete: {
     width: '45%',
-    backgroundColor: 'red',
+    backgroundColor: '#373f51',
+    color: 'white',
     borderWidth: 1,
     justifyContent: 'center',
     alignItems: 'center',
@@ -158,10 +214,12 @@ const myStyles = StyleSheet.create({
   },
   edit: {
     width: '45%',
-    backgroundColor: 'blue',
+    backgroundColor: '#463730',
     borderWidth: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    color: 'white'
+
   },
   todos: {
     width: '90%',
